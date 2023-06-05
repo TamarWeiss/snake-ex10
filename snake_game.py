@@ -6,6 +6,7 @@ LEFT = 'Left'
 RIGHT = 'Right'
 DOWN = 'Down'
 UP = 'Up'
+Location = tuple[int, int]
 
 # a dictionary which maps an inverse direction to each direction
 inverse_directions = {
@@ -17,7 +18,6 @@ inverse_directions = {
 
 class SnakeGame:
     def __init__(self, gd: GameDisplay, rounds: int) -> None:
-        self.__key_clicked = None
         self.__gd = gd
         self.__rounds = rounds
         self.__out_of_bounds = False
@@ -26,11 +26,18 @@ class SnakeGame:
         self.__gd.show_score(self.__score)
 
         # rudimentary snake variable
-        self.__snake: list[tuple[int, int]] = [(self.__gd.width // 2, self.__gd.height // 2)]
-        for i in range(1, SNAKE_SIZE):
-            x, y = self.__snake[-1]
+        self.__snake = self.__init_snake()
+
+    def __init_snake(self):
+        height, width = self.__gd.width, self.__gd.height
+        location = (width // 2, height // 2)
+        snake: list[Location] = []
+        for i in range(SNAKE_SIZE):
+            snake.append(location)
+            x, y = location
             if y - 1 < 0: break;  # if the snake is too large for the screen, break
-            self.__snake.append((x, y - 1))
+            location = (x, y - 1)
+        return snake
 
     def read_key(self) -> None:
         key_clicked = self.__gd.get_key_clicked()
@@ -48,7 +55,6 @@ class SnakeGame:
         # check if the snake has crossed itself or the screen boundaries
         if is_OOB or (x, y) in self.__snake:
             self.__out_of_bounds = True
-            self.__snake = self.__snake[:1]
         else:
             self.__snake.insert(0, (x, y))  # add the new position as the snake's head
             not grow and self.__snake.pop()  # remove the last cell of the snake (unless said otherwise)
