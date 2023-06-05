@@ -1,7 +1,11 @@
+import argparse
+
 from game_display import GameDisplay
 
 SNAKE_SIZE = 3
 SNAKE_COLOR = 'black'
+APPLE_COLOR = 'green'
+GROW_BONUS = 3
 LEFT = 'Left'
 RIGHT = 'Right'
 DOWN = 'Down'
@@ -16,17 +20,26 @@ inverse_directions = {
     UP: DOWN
 }
 
+def check_inbounds(num: int, length: int):
+    return 0 <= num < length
+
 class SnakeGame:
-    def __init__(self, gd: GameDisplay, rounds: int) -> None:
+    def __init__(self, gd: GameDisplay, args: argparse.Namespace) -> None:
         self.__gd = gd
-        self.__rounds = rounds
+        self.__rounds = args.rounds
         self.__out_of_bounds = False
         self.__facing = UP
         self.__score = 0
         self.__gd.show_score(self.__score)
+        self.__debug = args.debug
+        self.__grow_counter = 0
 
         # rudimentary snake variable
-        self.__snake = self.__init_snake()
+        if not self.__debug:
+            self.__snake = self.__init_snake()
+        self.__apples: list[Location] = []
+        self.__max_apples = args.apples
+        self.__max_walls = args.walls
 
     def __init_snake(self):
         height, width = self.__gd.width, self.__gd.height
@@ -41,43 +54,37 @@ class SnakeGame:
 
     def read_key(self) -> None:
         key_clicked = self.__gd.get_key_clicked()
-        # if we input a direction which not the inverse to our current one
+        # if we input a direction which is not the inverse to our current one
         if key_clicked and key_clicked != inverse_directions[self.__facing]:
             self.__facing = key_clicked
 
-    @staticmethod
-    def __check_inbounds(num: int, length: int):
-        return 0 <= num < length
-
     # TODO: add collision detection for walls
-    def __move_snake(self, x: int, y: int, grow=False):
-        is_OOB = not self.__check_inbounds(x, self.__gd.width) or not self.__check_inbounds(y, self.__gd.height)
+    def __move_snake(self, x: int, y: int):
+        width, height = self.__gd.width, self.__gd.height
+        is_OOB = not check_inbounds(x, width) or not check_inbounds(y, height)
         # check if the snake has crossed itself or the screen boundaries
         if is_OOB or (x, y) in self.__snake:
             self.__out_of_bounds = True
-        else:
+        else:  # moving the snake as normal
             self.__snake.insert(0, (x, y))  # add the new position as the snake's head
-            not grow and self.__snake.pop()  # remove the last cell of the snake (unless said otherwise)
+
+        # the snake will grow as long as grow_counter is bigger than 0
+        if self.__grow_counter <= 0 or self.__out_of_bounds:
+            self.__snake.pop()
 
     # TODO: support other objects
     def update_objects(self) -> None:
-        x, y = self.__snake[0]
-        facing = self.__facing
+        if not self.__debug:  # updates the snake object (as long as it's not debug mode)
+            x, y = self.__snake[0]
+            facing = self.__facing
+            x += -1 if facing == LEFT else int(facing == RIGHT)
+            y += -1 if facing == DOWN else int(facing == UP)
+            self.__move_snake(x, y)
 
-        if facing == LEFT:
-            x -= 1
-        elif facing == RIGHT:
-            x += 1
-        elif facing == DOWN:
-            y -= 1
-        elif facing == UP:
-            y += 1
-
-        self.__move_snake(x, y)
-
-    # TODO: flag snake to grow after this. currently unused
+    # TODO: implement removing the apple from the list. currently unused.
     def __eat_apple(self):
         self.__update_score(int(len(self.__snake) ** 0.5))
+        self.__grow_counter += GROW_BONUS
 
     def __update_score(self, score: int):
         self.__score += score
@@ -85,12 +92,18 @@ class SnakeGame:
 
     # TODO: support other objects
     def draw_board(self) -> None:
-        for x, y in self.__snake:  # draws the snake.
-            self.__gd.draw_cell(x, y, SNAKE_COLOR)
+        for x, y in self.__apples:  # drawing the apples
+            self.__gd.draw_cell(x, y, APPLE_COLOR)
 
-    # TODO: what does this handle beside gd?
+        if not self.__debug:  # drawing the snake (unless its debug mode)
+            for x, y in self.__snake:
+                self.__gd.draw_cell(x, y, SNAKE_COLOR)
+
+    # TODO: grow counter should tick down at the start or at the end of the round?
     def end_round(self) -> None:
         self.__gd.end_round()  # responsible for updating the game screen
+        if self.__grow_counter > 0:  # ticking down the counter at the end of each round
+            self.__grow_counter -= 1
 
     def is_over(self) -> bool:
         # noinspection PyProtectedMember
