@@ -22,7 +22,8 @@ class SnakeGame:
         self.__rounds = rounds
         self.__out_of_bounds = False
         self.__facing = UP
-        self.__update_score(0)
+        self.__score = 0
+        self.__gd.show_score(self.__score)
 
         # rudimentary snake variable
         self.__snake: list[tuple[int, int]] = [(self.__gd.width // 2, self.__gd.height // 2)]
@@ -72,8 +73,8 @@ class SnakeGame:
     def __eat_apple(self):
         self.__update_score(int(len(self.__snake) ** 0.5))
 
-    def __update_score(self, score):
-        self.__score = score
+    def __update_score(self, score: int):
+        self.__score += score
         self.__gd.show_score(self.__score)
 
     # TODO: support other objects
@@ -91,4 +92,4 @@ class SnakeGame:
         return rounds_over or self.__out_of_bounds
 
     def game_over(self):
-        self.__update_score(f'Game Over! Final score: {self.__score}')
+        self.__gd.show_score(f'Game Over! Final score: {self.__score}')
