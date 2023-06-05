@@ -41,10 +41,11 @@ class SnakeGame:
     def __check_inbounds(num: int, length: int):
         return 0 <= num < length
 
-    # TODO: add collision detection for walls and apples
+    # TODO: add collision detection for walls
     def __move_snake(self, x: int, y: int, grow=False):
         is_OOB = not self.__check_inbounds(x, self.__gd.width) or not self.__check_inbounds(y, self.__gd.height)
-        if is_OOB or (x, y) in self.__snake:  # check if the snake has crossed itself or the screen boundaries
+        # check if the snake has crossed itself or the screen boundaries
+        if is_OOB or (x, y) in self.__snake:
             self.__out_of_bounds = True
             self.__snake = self.__snake[:1]
         else:
@@ -52,7 +53,6 @@ class SnakeGame:
             not grow and self.__snake.pop()  # remove the last cell of the snake (unless said otherwise)
 
     # TODO: support other objects
-    # TODO: revamp snake to move automatically. prevent snake from going backward.
     def update_objects(self) -> None:
         x, y = self.__snake[0]
         facing = self.__facing
@@ -68,7 +68,7 @@ class SnakeGame:
 
         self.__move_snake(x, y)
 
-    # TODO: flag snake to grow. currently unused
+    # TODO: flag snake to grow after this. currently unused
     def __eat_apple(self):
         self.__update_score(int(len(self.__snake) ** 0.5))
 
@@ -81,7 +81,7 @@ class SnakeGame:
         for x, y in self.__snake:  # draws the snake.
             self.__gd.draw_cell(x, y, SNAKE_COLOR)
 
-    # TODO: what does this handle?
+    # TODO: what does this handle beside gd?
     def end_round(self) -> None:
         self.__gd.end_round()  # responsible for updating the game screen
 
