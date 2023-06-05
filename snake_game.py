@@ -2,6 +2,18 @@ from game_display import GameDisplay
 
 SNAKE_SIZE = 3
 SNAKE_COLOR = 'black'
+LEFT = 'Left'
+RIGHT = 'Right'
+DOWN = 'Down'
+UP = 'Up'
+
+# a dictionary which maps an inverse direction to each direction
+inverse_directions = {
+    LEFT: RIGHT,
+    RIGHT: LEFT,
+    DOWN: UP,
+    UP: DOWN
+}
 
 class SnakeGame:
     def __init__(self, gd: GameDisplay, rounds: int) -> None:
@@ -9,7 +21,7 @@ class SnakeGame:
         self.__gd = gd
         self.__rounds = rounds
         self.__out_of_bounds = False
-        self.__facing = 'Up'
+        self.__facing = UP
         self.__update_score(0)
 
         # rudimentary snake variable
@@ -20,7 +32,10 @@ class SnakeGame:
             self.__snake.append((x, y - 1))
 
     def read_key(self) -> None:
-        self.__key_clicked = self.__gd.get_key_clicked()
+        key_clicked = self.__gd.get_key_clicked()
+        # if we input a direction which not the inverse to our current one
+        if key_clicked and key_clicked != inverse_directions[self.__facing]:
+            self.__facing = key_clicked
 
     @staticmethod
     def __check_inbounds(num: int, length: int):
@@ -40,18 +55,18 @@ class SnakeGame:
     # TODO: revamp snake to move automatically. prevent snake from going backward.
     def update_objects(self) -> None:
         x, y = self.__snake[0]
-        key_clicked = self.__key_clicked
-        if key_clicked == 'Left':
+        facing = self.__facing
+
+        if facing == LEFT:
             x -= 1
-        elif key_clicked == 'Right':
+        elif facing == RIGHT:
             x += 1
-        elif key_clicked == 'Down':
+        elif facing == DOWN:
             y -= 1
-        elif key_clicked == 'Up':
+        elif facing == UP:
             y += 1
 
-        # calls __move_snake ONLY when the position is changed
-        (x, y) != self.__snake[0] and self.__move_snake(x, y)
+        self.__move_snake(x, y)
 
     # TODO: flag snake to grow. currently unused
     def __eat_apple(self):

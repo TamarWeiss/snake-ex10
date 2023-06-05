@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import game_utils
 
 CELL_SIZE = 15
-ROUND_TIME = 100
+ROUND_TIME = 150
 
 WIDTH = 40
 HEIGHT = 30
