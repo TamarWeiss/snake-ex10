@@ -11,6 +11,7 @@ class SnakeGame:
         self.__gd = gd
         self.__rounds = rounds
         self.__out_of_bounds = False
+        self.__facing = 'Up'
 
         # rudimentary snake variable
         self.__snake: list[tuple[int, int]] = [(self.__gd.width // 2, self.__gd.height // 2)]
@@ -30,18 +31,17 @@ class SnakeGame:
 
     # TODO: add collision detection for walls
     def __move_snake(self, x: int, y: int, grow=False):
-        # if the snake hasn't touched itself or the boundaries
+        # check if the snake has touched itself or the screen boundaries
         if not self.__check_bounds(x, self.__gd.width) or not self.__check_bounds(y, self.__gd.width)\
                 or (x, y) in self.__snake[1:]:
             self.__out_of_bounds = True
             self.__snake = self.__snake[:1]
-            return
-
-        if (x, y) != self.__snake[0]:  # while the head moves
-            self.__snake.insert(0, (x, y))  # add to new location as the snake's add
+        else:
+            self.__snake.insert(0, (x, y))  # add the new position as the snake's head
             not grow and self.__snake.pop()  # remove the last cell of the snake (unless said otherwise)
 
     # TODO: support other objects
+    # TODO: prevent snake from going the opposite direction he is facing
     def update_objects(self) -> None:
         x, y = self.__snake[0]
         key_clicked = self.__key_clicked
@@ -54,7 +54,11 @@ class SnakeGame:
         elif key_clicked == 'Up':
             y += 1
 
-        self.__move_snake(x, y)
+        # calls __move_snake ONLY when the position is changed
+        (x, y) != self.__snake[0] and self.__move_snake(x, y)
+
+    def __update_score(self):
+        self.__gd.show_score(int(len(self.__snake) ** 0.5))
 
     # TODO: support other objects
     def draw_board(self) -> None:
