@@ -81,7 +81,7 @@ class GameDisplay:
         :return: None
         """
         if not self._game_control_thread.is_alive():
-            self._root.after(1000, self._root.destroy)
+            self._root.after(2000, self._root.destroy)
         else:
             self._root.after(300, self._check_end)
 
