@@ -72,7 +72,7 @@ class SnakeGame:
     def __eat_apple(self):
         self.__update_score(int(len(self.__snake) ** 0.5))
 
-    def __update_score(self, score: int | str):
+    def __update_score(self, score):
         self.__score = score
         self.__gd.show_score(self.__score)
 
