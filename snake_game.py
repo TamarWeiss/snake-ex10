@@ -5,6 +5,7 @@ from game_display import GameDisplay
 SNAKE_SIZE = 3
 SNAKE_COLOR = 'black'
 APPLE_COLOR = 'green'
+WALL_COLOR = 'blue'
 GROW_BONUS = 3
 LEFT = 'Left'
 RIGHT = 'Right'
@@ -26,31 +27,28 @@ def check_inbounds(num: int, length: int):
 class SnakeGame:
     def __init__(self, gd: GameDisplay, args: argparse.Namespace) -> None:
         self.__gd = gd
-        self.__rounds = args.rounds
+        self.__rounds: int = args.rounds
         self.__out_of_bounds = False
         self.__facing = UP
         self.__score = 0
-        self.__gd.show_score(self.__score)
-        self.__debug = args.debug
+        self.__debug: bool = args.debug
+        self.__max_apples: int = args.apples
+        self.__max_walls: int = args.walls
         self.__grow_counter = 0
+        self.__gd.show_score(self.__score)
 
-        # rudimentary snake variable
+        # game's objects
         if not self.__debug:
             self.__snake = self.__init_snake()
         self.__apples: list[Location] = []
-        self.__max_apples = args.apples
-        self.__max_walls = args.walls
 
     def __init_snake(self):
-        height, width = self.__gd.width, self.__gd.height
-        location = (width // 2, height // 2)
-        snake: list[Location] = []
-        for i in range(SNAKE_SIZE):
-            snake.append(location)
-            x, y = location
-            if y - 1 < 0: break;  # if the snake is too large for the screen, break
-            location = (x, y - 1)
-        return snake
+        x, y = self.__gd.width // 2, self.__gd.height // 2
+        return [
+            (x, y - i)
+            for i in range(SNAKE_SIZE)
+            if y - i >= 0
+        ]
 
     def read_key(self) -> None:
         key_clicked = self.__gd.get_key_clicked()
@@ -99,7 +97,7 @@ class SnakeGame:
             for x, y in self.__snake:
                 self.__gd.draw_cell(x, y, SNAKE_COLOR)
 
-    # TODO: grow counter should tick down at the start or at the end of the round?
+    # TODO: grow counter should tick down at the start or at the end of each round?
     def end_round(self) -> None:
         self.__gd.end_round()  # responsible for updating the game screen
         if self.__grow_counter > 0:  # ticking down the counter at the end of each round
@@ -111,4 +109,4 @@ class SnakeGame:
         return rounds_over or self.__out_of_bounds
 
     def game_over(self):
-        self.__gd.show_score(f'Game Over! Final score: {self.__score}')
+        self.__gd.show_score(f'{self.__score}. Game Over!')
