@@ -14,8 +14,6 @@ class Wall(Movable):
         next_point = self.get_next_pos(center, inverse=True)
         return [next_point, center, prev_point]
 
-    def move(self, apples: list[Point]):
+    def move(self):
         pos = self.get_next_pos(self.__get_center())
         self.coordinates = self.__get_coordinates(pos)
-        if self[0] in apples:
-            apples.remove(self[0])

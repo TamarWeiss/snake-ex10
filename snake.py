@@ -21,7 +21,8 @@ class Snake(Movable):
     def get_next_pos(self, pos=None, inverse=False) -> Point:
         return super().get_next_pos(pos or self[0], inverse)
 
-    def move(self, pos: Point):
+    def move(self):
+        pos = self.get_next_pos()
         # check if the snake has crossed itself
         if pos in self.coordinates:
             self.flag_collision()
@@ -29,7 +30,7 @@ class Snake(Movable):
             self.coordinates.insert(0, pos)  # add the new position as the snake's head
 
         # the snake will grow as long as grow_counter is bigger than 0
-        if not self.__grow_counter or self.collided:
+        if not self.__grow_counter:
             self.coordinates.pop()
         self.__count_down()
 

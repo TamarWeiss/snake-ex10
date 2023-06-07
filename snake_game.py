@@ -63,7 +63,7 @@ class SnakeGame:
         # check if the snake has crossed the boundaries
         if not self.__check_inbounds(pos):
             self.__snake.flag_collision()
-        self.__snake.move(pos)
+        self.__snake.move()
 
     def __eat_apple(self):
         score = self.__snake.eat(self.__apples)
@@ -74,7 +74,10 @@ class SnakeGame:
         self.__gd.show_score(self.__score)
 
     def __move_wall(self, wall: Wall):
-        wall.move(self.__apples)
+        wall.move()
+        # if the wall ran over an apple
+        if wall[0] in self.__apples:
+            self.__apples.remove(wall[0])
         # if the wall is fully out of bounds
         if not self.__get_wall_coordinates(wall):
             self.__walls.remove(wall)

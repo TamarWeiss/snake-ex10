@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Optional, Sequence
 
 from consts import DOWN, LEFT, Point, RIGHT, UP, inverse_directions
@@ -5,7 +6,7 @@ from consts import DOWN, LEFT, Point, RIGHT, UP, inverse_directions
 class Movable(Sequence):
     def __init__(self, direction: str):
         self.__direction = direction
-        self.coordinates = []
+        self.coordinates: list[Point] = []
 
     def turn(self, direction: Optional[str]):
         # if the direction is not the inverse to our current one
@@ -18,6 +19,10 @@ class Movable(Sequence):
         x += -int(direction == LEFT) + int(direction == RIGHT)
         y += -int(direction == DOWN) + int(direction == UP)
         return x, y
+
+    @abstractmethod
+    def move(self):
+        pass
 
     def __len__(self) -> int:
         return len(self.coordinates)
