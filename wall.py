@@ -18,5 +18,11 @@ class Wall:
         next_point = get_next_pos(center, inverse_directions[direction])
         return [next_point, center, prev_point]
 
-    def move(self):
+    def move(self, apples: list[Point]):
         self.__center = get_next_pos(self.__center, self.__direction)
+        head = self[0]
+        if head in apples:
+            apples.remove(head)
+
+    def __getitem__(self, index: int) -> Point:
+        return self.coordinates()[index]

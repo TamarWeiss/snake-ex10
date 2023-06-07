@@ -72,18 +72,15 @@ class SnakeGame:
         self.__snake.move(pos)
 
     def __eat_apple(self):
-        self.__update_score(self.__snake.grow())
-        self.__apples.remove(self.__snake[0])
+        score = self.__snake.eat(self.__apples)
+        self.__update_score(score)
 
     def __update_score(self, score: int):
         self.__score += score
         self.__gd.show_score(self.__score)
 
     def __move_wall(self, wall: Wall):
-        wall.move()
-        head = wall.coordinates()[0]
-        if head in self.__apples:
-            self.__apples.remove(head)
+        wall.move(self.__apples)
         # if the wall is fully out of bounds
         if not self.__get_wall_coordinates(wall):
             self.__walls.remove(wall)
