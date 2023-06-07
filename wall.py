@@ -17,7 +17,7 @@ class Wall:
         direction = self.__direction
         prev_point = get_next_pos(center, direction)
         next_point = get_next_pos(center, inverse_directions[direction])
-        return [prev_point, center, next_point]
+        return [next_point, center, prev_point]
 
     def move(self):
         self.__center = get_next_pos(self.__center, self.__direction)

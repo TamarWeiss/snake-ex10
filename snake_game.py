@@ -8,6 +8,7 @@ from wall import Wall, get_next_pos
 def check_inbounds_helper(num: int, length: int) -> bool:
     return 0 <= num < length
 
+# noinspection PyProtectedMember
 class SnakeGame:
     # ------------------------------------------------------------------
     # init methods
@@ -50,6 +51,12 @@ class SnakeGame:
         width, height = self.__gd.width, self.__gd.height
         return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
 
+    def __get_wall_coordinates(self, wall: Wall):
+        return [
+            pos for pos in wall.coordinates()
+            if self.__check_inbounds(pos)
+        ]
+
     def __add_walls(self):
         if len(self.__walls) < self.__max_walls:
             wall = Wall(*get_random_wall_data())
@@ -90,6 +97,15 @@ class SnakeGame:
         self.__score += score
         self.__gd.show_score(self.__score)
 
+    def __move_wall(self, wall: Wall):
+        wall.move()
+        head = wall.coordinates()[0]
+        if head in self.__apples:
+            self.__apples.remove(head)
+        # if the wall is fully out of bounds
+        if not self.__get_wall_coordinates(wall):
+            self.__walls.remove(wall)
+
     def __draw_objects(self, cells: list[Point], color: str):
         for x, y in cells:
             self.__gd.draw_cell(x, y, color)
@@ -106,8 +122,13 @@ class SnakeGame:
 
     # TODO: support walls
     def update_objects(self):
-        # move walls before snake
-        if not self.__debug:  # activate the snake-related functions (as long as it's not debug mode)
+        # move walls every even round
+        if not self.__gd._round_num % 2:
+            for wall in self.__walls:
+                self.__move_wall(wall)
+
+        # activate the snake-related functions (as long as it's not debug mode)
+        if not self.__debug:
             pos = get_next_pos(self.__snake[0], self.__facing)
             self.__move_snake(pos)
             if self.__snake[0] in self.__apples:
@@ -121,11 +142,7 @@ class SnakeGame:
         self.__draw_objects(self.__apples, APPLE_COLOR)  # drawing the apples
         not self.__debug and self.__draw_objects(self.__snake, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
         for wall in self.__walls:  # lastly, drawing the walls
-            coordinates = [
-                pos for pos in wall.coordinates()
-                if self.__check_inbounds(pos)
-            ]
-            self.__draw_objects(coordinates, WALL_COLOR)
+            self.__draw_objects(self.__get_wall_coordinates(wall), WALL_COLOR)
 
     def end_round(self):
         self.__gd.end_round()  # responsible for updating the game screen
@@ -133,7 +150,6 @@ class SnakeGame:
             self.__grow_counter -= 1
 
     def is_over(self) -> bool:
-        # noinspection PyProtectedMember
         rounds_over = self.__gd._round_num == self.__rounds
         return rounds_over or self.__out_of_bounds
 
