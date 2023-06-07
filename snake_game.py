@@ -1,6 +1,7 @@
 import argparse
 
 from consts import *
+import game_utils
 from game_display import GameDisplay
 
 Location = tuple[int, int]
@@ -44,6 +45,21 @@ class SnakeGame:
             for i in range(SNAKE_SIZE)
             if y - i >= 0
         ]
+    # TODO check collision with walls
+    def __init_apples(self):
+        """this method initializes the apples"""
+        x, y = game_utils.get_random_apple_data()
+        if (x, y) not in self.__snake:
+            self.__apples.append((x,y))
+
+    # TODO check collision with walls
+    # TODO does this include the i + 1 round if game is over?
+    def add_apples(self):
+        x, y = game_utils.get_random_apple_data()
+        while len(self.__apples) < self.__max_apples:
+            if (x, y) not in self.__snake and (x, y) not in self.__snake and self.is_over():
+                self.__apples.append((x, y))
+
 
     # ------------------------------------------------------------------
     # private methods
@@ -67,6 +83,9 @@ class SnakeGame:
     def __eat_apple(self) -> None:
         self.__update_score(int(len(self.__snake) ** 0.5))
         self.__grow_counter += GROW_BONUS
+        for apple in self.__apples:
+            if self.__snake[0] == apple:
+                self.__apples.remove(apple)
 
     def __update_score(self, score: int) -> None:
         self.__score += score
