@@ -83,7 +83,7 @@ class SnakeGame:
     # TODO: implement removing the apple from the list. currently unused.
     def __eat_apple(self) -> None:
         self.__update_score(int(len(self.__snake) ** 0.5))
-        self.__grow_counter += GROW_BONUS
+        self.__grow_counter += GROW_BONUS + int(not self.__grow_counter)
         self.__apples.remove(self.__snake[0])
 
     def __update_score(self, score: int) -> None:
