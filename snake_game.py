@@ -2,7 +2,7 @@ import argparse
 
 from consts import *
 from game_display import GameDisplay
-from utils import Location, check_inbounds, get_next_pos
+from utils import *
 
 class SnakeGame:
     # ------------------------------------------------------------------
