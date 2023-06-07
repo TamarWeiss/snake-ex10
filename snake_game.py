@@ -40,26 +40,20 @@ class SnakeGame:
         return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
 
     def __get_wall_coordinates(self, wall: Wall):
-        return [
-            pos for pos in wall.coordinates()
-            if self.__check_inbounds(pos)
-        ]
+        return [pos for pos in wall if self.__check_inbounds(pos)]
 
     def __add_walls(self):
         if len(self.__walls) < self.__max_walls:
             wall = Wall(*get_random_wall_data())
             occupied_cells = self.__snake + self.__apples
             # if nothing intersects, add the wall
-            if not set(occupied_cells) & set(wall.coordinates()):
+            if not set(occupied_cells) & set(wall):
                 self.__walls.append(wall)
 
     def __add_apples(self):
         if len(self.__apples) < self.__max_apples:
             pos = get_random_apple_data()
-            occupied_cells = self.__snake + self.__apples + [
-                cell for wall in self.__walls for cell in wall.coordinates()
-            ]
-
+            occupied_cells = self.__snake + self.__apples + [cell for wall in self.__walls for cell in wall]
             if pos not in occupied_cells:
                 self.__apples.append(pos)
 

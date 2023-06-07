@@ -31,7 +31,7 @@ class Snake:
         # check if the snake has crossed itself
         if pos in self.coordinates:
             self.flag_collision()
-        elif not self.collided:  # if it hasn't collided with somthing already
+        elif not self.collided:  # if it hadn't collided with somthing already
             self.coordinates.insert(0, pos)  # add the new position as the snake's head
 
         # the snake will grow as long as grow_counter is bigger than 0

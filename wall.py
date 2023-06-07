@@ -11,7 +11,7 @@ class Wall:
         self.__center = (x, y)
         self.__direction = direction
 
-    def coordinates(self) -> list[Point]:
+    def __coordinates(self) -> list[Point]:
         center = self.__center
         direction = self.__direction
         prev_point = get_next_pos(center, direction)
@@ -25,4 +25,7 @@ class Wall:
             apples.remove(head)
 
     def __getitem__(self, index: int) -> Point:
-        return self.coordinates()[index]
+        return self.__coordinates()[index]
+
+    def __iter__(self):
+        return (cell for cell in self.__coordinates())
