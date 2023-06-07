@@ -2,7 +2,17 @@ import argparse
 
 from consts import *
 from game_display import GameDisplay
-from utils import *
+
+Location = tuple[int, int]
+
+def check_inbounds(num: int, length: int) -> bool:
+    return 0 <= num < length
+
+def get_next_pos(head: Location, direction: str) -> Location:
+    x, y = head
+    x += -int(direction == LEFT) + int(direction == RIGHT)
+    y += -int(direction == DOWN) + int(direction == UP)
+    return x, y
 
 class SnakeGame:
     # ------------------------------------------------------------------
