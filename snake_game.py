@@ -6,17 +6,14 @@ from game_display import GameDisplay
 
 Point = tuple[int, int]
 
-
 def check_inbounds(num: int, length: int) -> bool:
     return 0 <= num < length
-
 
 def get_next_pos(head: Point, direction: str) -> Point:
     x, y = head
     x += -int(direction == LEFT) + int(direction == RIGHT)
     y += -int(direction == DOWN) + int(direction == UP)
     return x, y
-
 
 class SnakeGame:
     # ------------------------------------------------------------------
@@ -58,7 +55,6 @@ class SnakeGame:
     # ------------------------------------------------------------------
 
     # TODO check collision with walls
-    # TODO does this include the i + 1 round if game is over?
     def add_apples(self):
         if len(self.__apples) < self.__max_apples:
             pos = game_utils.get_random_apple_data()
@@ -80,7 +76,6 @@ class SnakeGame:
         if self.__grow_counter <= 0 or self.__out_of_bounds:
             self.__snake.pop()
 
-    # TODO: implement removing the apple from the list. currently unused.
     def __eat_apple(self) -> None:
         self.__update_score(int(len(self.__snake) ** 0.5))
         self.__grow_counter += GROW_BONUS + int(not self.__grow_counter)
@@ -104,7 +99,7 @@ class SnakeGame:
         if key_clicked and key_clicked != inverse_directions[self.__facing]:
             self.__facing = key_clicked
 
-    # TODO: support other objects
+    # TODO: support walls
     def update_objects(self) -> None:
         if not self.__debug:  # activate the snake-related functions (as long as it's not debug mode)
             pos = get_next_pos(self.__snake[0], self.__facing)
@@ -119,7 +114,6 @@ class SnakeGame:
         for wall in self.__walls:  # lastly, drawing the walls
             self.__draw_items(wall, WALL_COLOR)
 
-    # TODO: grow counter should tick down at the start or at the end of each round?
     def end_round(self) -> None:
         self.__gd.end_round()  # responsible for updating the game screen
         if self.__grow_counter > 0:  # ticking down the counter at the end of each round
