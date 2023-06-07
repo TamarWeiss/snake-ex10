@@ -1,31 +1,21 @@
-from consts import DOWN, LEFT, Point, RIGHT, UP, inverse_directions
+from consts import Point
+from movable import Movable
 
-def get_next_pos(head: Point, direction: str) -> Point:
-    x, y = head
-    x += -int(direction == LEFT) + int(direction == RIGHT)
-    y += -int(direction == DOWN) + int(direction == UP)
-    return x, y
-
-class Wall:
+class Wall(Movable):
     def __init__(self, x: int, y: int, direction: str):
-        self.__center = (x, y)
-        self.__direction = direction
+        super().__init__(direction)
+        self.coordinates = self.__get_coordinates((x, y))
 
-    def __coordinates(self) -> list[Point]:
-        center = self.__center
-        direction = self.__direction
-        prev_point = get_next_pos(center, direction)
-        next_point = get_next_pos(center, inverse_directions[direction])
+    def __get_center(self) -> Point:
+        return self.coordinates[len(self) // 2]
+
+    def __get_coordinates(self, center) -> list[Point]:
+        prev_point = self.get_next_pos(center)
+        next_point = self.get_next_pos(center, inverse=True)
         return [next_point, center, prev_point]
 
     def move(self, apples: list[Point]):
-        self.__center = get_next_pos(self.__center, self.__direction)
-        head = self[0]
-        if head in apples:
-            apples.remove(head)
-
-    def __getitem__(self, index: int) -> Point:
-        return self.__coordinates()[index]
-
-    def __iter__(self):
-        return (cell for cell in self.__coordinates())
+        pos = self.get_next_pos(self.__get_center())
+        self.coordinates = self.__get_coordinates(pos)
+        if self[0] in apples:
+            apples.remove(self[0])
