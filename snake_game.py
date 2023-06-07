@@ -28,7 +28,7 @@ class SnakeGame:
 
         # game's objects
 
-        self.__snake = self.__init_snake()
+        self.__snake = self.__init_snake()  # TODO: convert this into class
         self.__apples: list[Point] = []
         self.__walls: list[Wall] = []
 
@@ -65,7 +65,6 @@ class SnakeGame:
             if not set(occupied_cells) & set(wall.coordinates()):
                 self.__walls.append(wall)
 
-    # TODO check collision with walls
     def __add_apples(self):
         if len(self.__apples) < self.__max_apples:
             pos = get_random_apple_data()
@@ -120,7 +119,6 @@ class SnakeGame:
         if key_clicked and key_clicked != inverse_directions[self.__facing]:
             self.__facing = key_clicked
 
-    # TODO: support walls
     def update_objects(self):
         # move walls every even round
         if not self.__gd._round_num % 2:
