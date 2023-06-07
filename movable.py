@@ -20,6 +20,12 @@ class Movable(Sequence):
         y += -int(direction == DOWN) + int(direction == UP)
         return x, y
 
+    def eat(self, apples: list[Point]) -> bool:
+        if self[0] in apples:
+            apples.remove(self[0])
+            return True
+        return False
+
     @abstractmethod
     def move(self):
         pass

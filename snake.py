@@ -34,8 +34,7 @@ class Snake(Movable):
             self.coordinates.pop()
         self.__count_down()
 
-    def eat(self, apples: list[Point]):
-        apples.remove(self[0])
+    def grow(self):
         self.__grow_counter += GROW_BONUS
         return int(len(self) ** 0.5)
 

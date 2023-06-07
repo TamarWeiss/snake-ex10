@@ -65,19 +65,13 @@ class SnakeGame:
             self.__snake.flag_collision()
         self.__snake.move()
 
-    def __eat_apple(self):
-        score = self.__snake.eat(self.__apples)
-        self.__update_score(score)
-
     def __update_score(self, score: int):
         self.__score += score
         self.__gd.show_score(self.__score)
 
     def __move_wall(self, wall: Wall):
         wall.move()
-        # if the wall ran over an apple
-        if wall[0] in self.__apples:
-            self.__apples.remove(wall[0])
+        wall.eat(self.__apples)  # will trigger only when a wall ran over an apple
         # if the wall is fully out of bounds
         if not self.__get_wall_coordinates(wall):
             self.__walls.remove(wall)
@@ -103,8 +97,10 @@ class SnakeGame:
         # activate the snake-related functions (as long as it's not debug mode)
         if not self.__debug:
             self.__move_snake()
-            if self.__snake[0] in self.__apples:
-                self.__eat_apple()
+            # if the snake had eaten an apple
+            if self.__snake.eat(self.__apples):
+                score = self.__snake.grow()
+                self.__update_score(score)
 
     def add_objects(self):
         self.__add_walls()
