@@ -12,7 +12,6 @@ class Wall:
         self.__direction = direction
 
     def coordinates(self) -> list[Point]:
-        """:return: A list of coordinates the car is in"""
         center = self.__center
         direction = self.__direction
         prev_point = get_next_pos(center, direction)

@@ -5,9 +5,6 @@ from game_display import GameDisplay
 from game_utils import get_random_apple_data, get_random_wall_data
 from wall import Wall, get_next_pos
 
-def check_inbounds_helper(num: int, length: int) -> bool:
-    return 0 <= num < length
-
 # noinspection PyProtectedMember
 class SnakeGame:
     # ------------------------------------------------------------------
@@ -47,6 +44,8 @@ class SnakeGame:
     # ------------------------------------------------------------------
 
     def __check_inbounds(self, pos: Point) -> bool:
+        def check_inbounds_helper(num: int, length: int) -> bool:
+            return 0 <= num < length
         x, y = pos
         width, height = self.__gd.width, self.__gd.height
         return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
@@ -76,7 +75,8 @@ class SnakeGame:
                 self.__apples.append(pos)
 
     # TODO: add collision detection for walls
-    def __move_snake(self, pos: Point):
+    def __move_snake(self):
+        pos = get_next_pos(self.__snake[0], self.__facing)
         # check if the snake has crossed itself or the boundaries
         if not self.__check_inbounds(pos) or pos in self.__snake:
             self.__out_of_bounds = True
@@ -127,8 +127,6 @@ class SnakeGame:
 
         # activate the snake-related functions (as long as it's not debug mode)
         if not self.__debug:
-            pos = get_next_pos(self.__snake[0], self.__facing)
-            self.__move_snake(pos)
             if self.__snake[0] in self.__apples:
                 self.__eat_apple()
 
