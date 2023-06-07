@@ -4,8 +4,6 @@ import game_utils
 from consts import *
 from game_display import GameDisplay
 
-Point = tuple[int, int]
-
 def check_inbounds(num: int, length: int) -> bool:
     return 0 <= num < length
 
@@ -38,7 +36,7 @@ class SnakeGame:
         self.__apples: list[Point] = []
         self.__walls: list[list[Point]] = []
 
-        self.add_apples()
+        self.__add_apples()
 
     def __init_snake(self) -> list[Point]:
         if not self.__debug:
@@ -55,7 +53,7 @@ class SnakeGame:
     # ------------------------------------------------------------------
 
     # TODO check collision with walls
-    def add_apples(self):
+    def __add_apples(self):
         if len(self.__apples) < self.__max_apples:
             pos = game_utils.get_random_apple_data()
             occupied_cells = self.__snake + self.__apples
@@ -85,7 +83,7 @@ class SnakeGame:
         self.__score += score
         self.__gd.show_score(self.__score)
 
-    def __draw_items(self, cells: list[Point], color: str) -> None:
+    def __draw_objects(self, cells: list[Point], color: str) -> None:
         for x, y in cells:
             self.__gd.draw_cell(x, y, color)
 
@@ -101,18 +99,22 @@ class SnakeGame:
 
     # TODO: support walls
     def update_objects(self) -> None:
+        # move walls before snake
         if not self.__debug:  # activate the snake-related functions (as long as it's not debug mode)
             pos = get_next_pos(self.__snake[0], self.__facing)
             self.__move_snake(pos)
             if self.__snake[0] in self.__apples:
                 self.__eat_apple()
-        self.add_apples()
+
+    def add_objects(self):
+        # add walls before
+        self.__add_apples()
 
     def draw_board(self) -> None:
-        self.__draw_items(self.__apples, APPLE_COLOR)  # drawing the apples
-        not self.__debug and self.__draw_items(self.__snake, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
+        self.__draw_objects(self.__apples, APPLE_COLOR)  # drawing the apples
+        not self.__debug and self.__draw_objects(self.__snake, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
         for wall in self.__walls:  # lastly, drawing the walls
-            self.__draw_items(wall, WALL_COLOR)
+            self.__draw_objects(wall, WALL_COLOR)
 
     def end_round(self) -> None:
         self.__gd.end_round()  # responsible for updating the game screen

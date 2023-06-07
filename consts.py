@@ -17,3 +17,5 @@ inverse_directions = {
     DOWN: UP,
     UP: DOWN
 }
+
+Point = tuple[int, int]
