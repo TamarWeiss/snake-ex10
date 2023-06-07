@@ -1,37 +1,14 @@
 import argparse
 
+from consts import *
 from game_display import GameDisplay
-
-SNAKE_SIZE = 3
-GROW_BONUS = 3
-SNAKE_COLOR = 'black'
-APPLE_COLOR = 'green'
-WALL_COLOR = 'blue'
-LEFT = 'Left'
-RIGHT = 'Right'
-DOWN = 'Down'
-UP = 'Up'
-
-Location = tuple[int, int]
-
-# a dictionary which maps an inverse direction to each direction
-inverse_directions = {
-    LEFT: RIGHT,
-    RIGHT: LEFT,
-    DOWN: UP,
-    UP: DOWN
-}
-
-def check_inbounds(num: int, length: int):
-    return 0 <= num < length
-
-def get_next_pos(head: Location, direction: str) -> Location:
-    x, y = head
-    x += -int(direction == LEFT) + int(direction == RIGHT)
-    y += -int(direction == DOWN) + int(direction == UP)
-    return x, y
+from utils import Location, check_inbounds, get_next_pos
 
 class SnakeGame:
+    # ------------------------------------------------------------------
+    # init methods
+    # ------------------------------------------------------------------
+
     def __init__(self, gd: GameDisplay, args: argparse.Namespace) -> None:
         self.__gd = gd
         self.__rounds: int = args.rounds
@@ -58,11 +35,9 @@ class SnakeGame:
             if y - i >= 0
         ]
 
-    def read_key(self) -> None:
-        key_clicked = self.__gd.get_key_clicked()
-        # if we input a direction which is not the inverse to our current one
-        if key_clicked and key_clicked != inverse_directions[self.__facing]:
-            self.__facing = key_clicked
+    # ------------------------------------------------------------------
+    # private methods
+    # ------------------------------------------------------------------
 
     # TODO: add collision detection for walls
     def __move_snake(self, pos: Location) -> None:
@@ -78,12 +53,6 @@ class SnakeGame:
         if self.__grow_counter <= 0 or self.__out_of_bounds:
             self.__snake.pop()
 
-    # TODO: support other objects
-    def update_objects(self) -> None:
-        if not self.__debug:  # updates the snake object (as long as it's not debug mode)
-            pos = get_next_pos(self.__snake[0], self.__facing)
-            self.__move_snake(pos)
-
     # TODO: implement removing the apple from the list. currently unused.
     def __eat_apple(self) -> None:
         self.__update_score(int(len(self.__snake) ** 0.5))
@@ -97,7 +66,22 @@ class SnakeGame:
         for x, y in cells:
             self.__gd.draw_cell(x, y, color)
 
+    # ------------------------------------------------------------------
+    # public methods
+    # ------------------------------------------------------------------
+
+    def read_key(self) -> None:
+        key_clicked = self.__gd.get_key_clicked()
+        # if we input a direction which is not the inverse to our current one
+        if key_clicked and key_clicked != inverse_directions[self.__facing]:
+            self.__facing = key_clicked
+
     # TODO: support other objects
+    def update_objects(self) -> None:
+        if not self.__debug:  # updates the snake object (as long as it's not debug mode)
+            pos = get_next_pos(self.__snake[0], self.__facing)
+            self.__move_snake(pos)
+
     def draw_board(self) -> None:
         self.__draw_items(self.__apples, APPLE_COLOR)  # drawing the apples
         not self.__debug and self.__draw_items(self.__snake, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
