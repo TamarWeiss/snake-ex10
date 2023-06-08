@@ -18,9 +18,8 @@ class Snake(Movable):
         if self.__grow_counter > 0:
             self.__grow_counter -= 1
 
-    def move(self, collided=False, grow=False):
-        self.collided = collided
-        super().move(self.collided, bool(self.__grow_counter))
+    def move(self, grow=False):
+        super().move(self.__grow_counter)
         self.__count_down()
 
     def grow(self) -> int:
@@ -29,9 +28,6 @@ class Snake(Movable):
 
     def cut(self, point: Point):
         index = self.coordinates.index(point)
-        if index == 0:
-            self.collided = True
-            return
         self.coordinates = self[:index]
         if len(self) <= 1:
             self.collided = True

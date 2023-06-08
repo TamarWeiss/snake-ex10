@@ -1,4 +1,4 @@
-from typing import Generator, Optional, Sequence
+from typing import Generator, Optional, Sequence, overload
 
 from consts import DOWN, LEFT, Point, RIGHT, UP, inverse_directions
 
@@ -19,9 +19,9 @@ class Movable(Sequence):
         if direction and direction != inverse_directions[self.__direction]:
             self.__direction = direction
 
-    def move(self, collided=False, grow=False):
+    def move(self, grow=False):
         pos = self.get_next_pos()
-        not collided and self.coordinates.insert(0, pos)
+        self.coordinates.insert(0, pos)
         not grow and self.coordinates.pop()
 
     def eat(self, apples: list[Point]) -> bool:
@@ -33,7 +33,11 @@ class Movable(Sequence):
     def __len__(self) -> int:
         return len(self.coordinates)
 
+    @overload
     def __getitem__(self, index: int) -> Point:
+        return self.coordinates[index]
+
+    def __getitem__(self, index: slice) -> list[Point]:
         return self.coordinates[index]
 
     def __iter__(self) -> Generator[Point, ..., ...]:
