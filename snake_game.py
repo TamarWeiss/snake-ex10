@@ -39,8 +39,14 @@ class SnakeGame:
         width, height = self.__gd.width, self.__gd.height
         return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
 
-    def __get_wall_coordinates(self, wall: Wall):
+    def __get_wall_coordinates(self, wall: Wall) -> list[Point]:
         return [pos for pos in wall if self.__check_inbounds(pos)]
+
+    def __flatten_walls(self) -> list[Point]:
+        return [
+            cell for wall in self.__walls
+            for cell in self.__get_wall_coordinates(wall)
+        ]
 
     def __add_walls(self):
         if len(self.__walls) < self.__max_walls:
@@ -53,18 +59,17 @@ class SnakeGame:
     def __add_apples(self):
         if len(self.__apples) < self.__max_apples:
             pos = get_random_apple_data()
-            occupied_cells = self.__snake + self.__apples + [cell for wall in self.__walls for cell in wall]
+            occupied_cells = self.__snake + self.__apples + self.__flatten_walls()
             if pos not in occupied_cells:
                 self.__apples.append(pos)
 
-    # TODO: add collision detection for walls
     def __move_snake(self):
         pos = self.__snake.get_next_pos()
-        # check if the snake has crossed the boundaries
-        if not self.__check_inbounds(pos):
-            self.__snake.flag_collision()
-        self.__snake.move()
+        # check if the snake has crossed a walls or the boundaries
+        collided = not self.__check_inbounds(pos) or pos in self.__flatten_walls()
+        self.__snake.move(pos, collided)
 
+    # TODO: add collision detection for snake.
     def __move_wall(self, wall: Wall):
         wall.move()
         wall.eat(self.__apples)  # will trigger only when a wall ran over an apple
@@ -106,8 +111,7 @@ class SnakeGame:
         self.__draw_objects(self.__apples, APPLE_COLOR)  # drawing the apples
         if not self.__debug:  # drawing the snake (unless its debug mode)
             self.__draw_objects(self.__snake.coordinates, SNAKE_COLOR)
-        for wall in self.__walls:  # lastly, drawing the walls
-            self.__draw_objects(self.__get_wall_coordinates(wall), WALL_COLOR)
+        self.__draw_objects(self.__flatten_walls(), WALL_COLOR)
 
     def end_round(self):
         self.__gd.end_round()  # responsible for updating the game screen
