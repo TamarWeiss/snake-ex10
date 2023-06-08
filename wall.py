@@ -4,9 +4,9 @@ from movable import Movable
 class Wall(Movable):
     def __init__(self, x: int, y: int, direction: str):
         super().__init__(direction)
-        self.coordinates = self.__get_coordinates((x, y))
+        self.coordinates = self.__set_coordinates((x, y))
 
-    def __get_coordinates(self, center) -> list[Point]:
+    def __set_coordinates(self, center) -> list[Point]:
         prev_point = self.get_next_pos(center)
         next_point = self.get_next_pos(center, inverse=True)
         return [next_point, center, prev_point]
@@ -14,4 +14,4 @@ class Wall(Movable):
     def move(self):
         center = self.coordinates[len(self) // 2]
         pos = self.get_next_pos(center)
-        self.coordinates = self.__get_coordinates(pos)
+        self.coordinates = self.__set_coordinates(pos)

@@ -65,10 +65,6 @@ class SnakeGame:
             self.__snake.flag_collision()
         self.__snake.move()
 
-    def __update_score(self, score: int):
-        self.__score += score
-        self.__gd.show_score(self.__score)
-
     def __move_wall(self, wall: Wall):
         wall.move()
         wall.eat(self.__apples)  # will trigger only when a wall ran over an apple
@@ -99,8 +95,8 @@ class SnakeGame:
             self.__move_snake()
             # if the snake had eaten an apple
             if self.__snake.eat(self.__apples):
-                score = self.__snake.grow()
-                self.__update_score(score)
+                self.__score += self.__snake.grow()
+                self.__gd.show_score(self.__score)
 
     def add_objects(self):
         self.__add_walls()
