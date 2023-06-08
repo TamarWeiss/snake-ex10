@@ -65,9 +65,9 @@ class SnakeGame:
 
     def __move_snake(self):
         pos = self.__snake.get_next_pos()
-        # check if the snake has crossed a walls or the boundaries
-        collided = not self.__check_inbounds(pos) or pos in self.__flatten_walls()
-        self.__snake.move(pos, collided)
+        # check if the snake has collided with anything
+        collided = not self.__check_inbounds(pos) or pos in self.__snake or pos in self.__flatten_walls()
+        self.__snake.move(collided)
 
     # TODO: add collision detection for snake.
     def __move_wall(self, wall: Wall):

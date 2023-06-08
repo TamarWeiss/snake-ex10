@@ -10,8 +10,3 @@ class Wall(Movable):
         prev_point = self.get_next_pos(center)
         next_point = self.get_next_pos(center, inverse=True)
         return [next_point, center, prev_point]
-
-    def move(self):
-        pos = self.get_next_pos(self[0])
-        self.coordinates.insert(0, pos)
-        self.coordinates.pop()

@@ -1,4 +1,6 @@
-from consts import GROW_BONUS, Point, SNAKE_SIZE, UP
+from typing import Optional
+
+from consts import GROW_BONUS, SNAKE_SIZE, UP, inverse_directions
 from movable import Movable
 
 class Snake(Movable):
@@ -18,21 +20,16 @@ class Snake(Movable):
         if self.__grow_counter > 0:
             self.__grow_counter -= 1
 
-    def move(self, pos: Point, collided: bool):
-        # check if the snake has crossed itself
-        if collided or pos in self.coordinates:
-            self.flag_collision()
-        elif not self.collided:  # if it hadn't collided with somthing already
-            self.coordinates.insert(0, pos)  # add the new position as the snake's head
+    def turn(self, direction: Optional[str]):
+        # if the direction is not the inverse to our current one
+        if direction and direction != inverse_directions[self.__direction]:
+            self.__direction = direction
 
-        # the snake will grow as long as grow_counter is bigger than 0
-        if not self.__grow_counter:
-            self.coordinates.pop()
+    def move(self, collided=False, grow=False):
+        self.collided = collided
+        super().move(self.collided, bool(self.__grow_counter))
         self.__count_down()
 
-    def grow(self):
+    def grow(self) -> int:
         self.__grow_counter += GROW_BONUS
         return int(len(self) ** 0.5)
-
-    def flag_collision(self):
-        self.collided = True
