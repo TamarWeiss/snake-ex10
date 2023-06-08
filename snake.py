@@ -1,4 +1,4 @@
-from consts import GROW_BONUS, SNAKE_SIZE, UP
+from consts import GROW_BONUS, Point, SNAKE_SIZE, UP
 from movable import Movable
 
 class Snake(Movable):
@@ -26,3 +26,12 @@ class Snake(Movable):
     def grow(self) -> int:
         self.__grow_counter += GROW_BONUS
         return int(len(self) ** 0.5)
+
+    def cut(self, point: Point):
+        index = self.coordinates.index(point)
+        if index == 0:
+            self.collided = True
+            return
+        self.coordinates = self[:index]
+        if len(self) <= 1:
+            self.collided = True

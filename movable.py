@@ -20,7 +20,7 @@ class Movable(Sequence):
             self.__direction = direction
 
     def move(self, collided=False, grow=False):
-        pos = self.get_next_pos(self[0])
+        pos = self.get_next_pos()
         not collided and self.coordinates.insert(0, pos)
         not grow and self.coordinates.pop()
 

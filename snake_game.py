@@ -70,10 +70,13 @@ class SnakeGame:
         collided = not self.__check_inbounds(pos) or pos in self.__snake or pos in self.__flatten_walls()
         self.__snake.move(collided)
 
-    # TODO: add collision detection for snake.
+    # TODO: add collision detection for snake. Including slice logic
     def __move_wall(self, wall: Wall):
         wall.move()
+        head = wall[0]
         wall.eat(self.__apples)  # will trigger only when a wall ran over an apple
+        if head in self.__snake:
+            self.__snake.cut(head)
         # if the wall is fully out of bounds
         if not self.__get_wall_coordinates(wall):
             self.__walls.remove(wall)
@@ -91,11 +94,6 @@ class SnakeGame:
         self.__snake.turn(key_clicked)
 
     def update_objects(self):
-        # move walls every even round
-        if not self.__gd._round_num % 2:
-            for wall in self.__walls:
-                self.__move_wall(wall)
-
         # activate the snake-related functions (as long as it's not debug mode)
         if not self.__debug:
             self.__move_snake()
@@ -103,6 +101,11 @@ class SnakeGame:
             if self.__snake.eat(self.__apples):
                 self.__score += self.__snake.grow()
                 self.__gd.show_score(self.__score)
+
+        # move walls every even round
+        if not self.__gd._round_num % 2 and not self.__snake.collided:
+            for wall in self.__walls:
+                self.__move_wall(wall)
 
     def add_objects(self):
         self.__add_walls()
