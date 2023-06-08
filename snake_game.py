@@ -50,7 +50,8 @@ class SnakeGame:
 
     def __add_walls(self):
         if len(self.__walls) < self.__max_walls:
-            wall = Wall(*get_random_wall_data())
+            data = get_random_wall_data()
+            wall = Wall(*data)
             occupied_cells = self.__snake + self.__apples
             # if nothing intersects, add the wall
             if not set(occupied_cells) & set(wall):
