@@ -1,6 +1,4 @@
-from typing import Optional
-
-from consts import GROW_BONUS, SNAKE_SIZE, UP, inverse_directions
+from consts import GROW_BONUS, SNAKE_SIZE, UP
 from movable import Movable
 
 class Snake(Movable):
@@ -19,11 +17,6 @@ class Snake(Movable):
         # ticking down the counter one at a time
         if self.__grow_counter > 0:
             self.__grow_counter -= 1
-
-    def turn(self, direction: Optional[str]):
-        # if the direction is not the inverse to our current one
-        if direction and direction != inverse_directions[self.__direction]:
-            self.__direction = direction
 
     def move(self, collided=False, grow=False):
         self.collided = collided

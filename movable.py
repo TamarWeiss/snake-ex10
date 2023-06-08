@@ -1,4 +1,4 @@
-from typing import Generator, Sequence
+from typing import Generator, Optional, Sequence
 
 from consts import DOWN, LEFT, Point, RIGHT, UP, inverse_directions
 
@@ -13,6 +13,11 @@ class Movable(Sequence):
         x += -int(direction == LEFT) + int(direction == RIGHT)
         y += -int(direction == DOWN) + int(direction == UP)
         return x, y
+
+    def turn(self, direction: Optional[str]):
+        # if the direction is not the inverse to our current one
+        if direction and direction != inverse_directions[self.__direction]:
+            self.__direction = direction
 
     def move(self, collided=False, grow=False):
         pos = self.get_next_pos(self[0])
