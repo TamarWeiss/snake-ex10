@@ -67,6 +67,7 @@ class SnakeGame:
     def __moves_objects(self):
         # move the snake
         not self.__debug and self.__snake.move()
+
         # move the walls
         if not self.__gd._round_num % 2:
             for wall in self.__walls:
@@ -79,23 +80,22 @@ class SnakeGame:
         if not self.__debug and self.__snake.eat(self.__apples):
             self.__score += self.__snake.grow()
             self.__gd.show_score(self.__score)
+
         # if a wall had run over an apple
         for wall in self.__walls:
             wall.eat(self.__apples)
 
-    # TODO: slice snake the round AFTER
     def __check_collision(self):
         head = self.__snake[0]
-        body = self.__snake[1:]
-
         # if the snake had collided with anything
-        if not self.__check_inbounds(head) or head in body or head in self.__flatten_walls():
+        if not self.__check_inbounds(head) or head in self.__snake[1:] or head in self.__flatten_walls():
             self.__snake.coordinates.pop(0)
             self.__snake.collided = True
-        else:  # if a wall has intersected the snake's body
-            for wall in self.__walls:
-                if wall[0] in body:
-                    self.__snake.cut(wall[0])
+
+    def __cut_snake(self):
+        for wall in self.__walls:
+            if wall[0] in self.__snake:
+                self.__snake.cut(wall[0])
 
     def __draw_objects(self, cells: list[Point], color: str):
         for x, y in cells:
@@ -110,6 +110,7 @@ class SnakeGame:
         self.__snake.turn(key_clicked)
 
     def update_objects(self):
+        not self.__debug and self.__cut_snake()
         self.__moves_objects()
         self.__eat_apples()
         not self.__debug and self.__check_collision()
