@@ -120,9 +120,8 @@ class SnakeGame:
 
     def draw_board(self):
         self.__draw_objects(self.__apples, APPLE_COLOR)  # drawing the apples
-        if not self.__debug:  # drawing the snake (unless its debug mode)
-            self.__draw_objects(self.__snake.coordinates, SNAKE_COLOR)
-        self.__draw_objects(self.__flatten_walls(), WALL_COLOR)
+        self.__draw_objects(self.__snake.coordinates, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
+        self.__draw_objects(self.__flatten_walls(), WALL_COLOR)  # drawing the walls
 
     def end_round(self):
         self.__gd.end_round()  # responsible for updating the game screen
