@@ -127,7 +127,7 @@ class SnakeGame:
         self.__gd.end_round()  # responsible for updating the game screen
 
     def is_over(self) -> bool:
-        rounds_over = self.__gd._round_num == self.__rounds
+        rounds_over = self.__gd._round_num == self.__rounds + 1
         return rounds_over or self.__snake.collided
 
     def game_over(self):
