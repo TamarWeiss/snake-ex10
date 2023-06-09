@@ -2,7 +2,7 @@ import argparse
 
 from consts import Point
 from game_display import GameDisplay
-from game_utils import get_random_apple_data, get_random_wall_data
+from game_utils import get_random_apple_data, get_random_wall_data, size
 from snake import Snake
 from wall import Wall
 
@@ -21,6 +21,7 @@ class SnakeGame:
         self.__rounds: int = args.rounds
         self.__out_of_bounds = False
         self.__score = 0
+        self.__round_num = 0
         self.__debug: bool = args.debug
         self.__max_apples: int = args.apples
         self.__max_walls: int = args.walls
@@ -28,7 +29,7 @@ class SnakeGame:
 
         # game's objects
         # the snake starts in the middle of the screen
-        self.__snake = Snake(self.__gd.width // 2, self.__gd.height // 2, debug=args.debug)
+        self.__snake = Snake(size.width // 2, size.height // 2, debug=args.debug)
         self.__apples: list[Point] = []
         self.__walls: list[Wall] = []
 
@@ -36,11 +37,12 @@ class SnakeGame:
     # private methods
     # ------------------------------------------------------------------
 
-    def __check_inbounds(self, pos: Point) -> bool:
+    @staticmethod
+    def __check_inbounds(pos: Point) -> bool:
         def check_inbounds_helper(num: int, length: int) -> bool:
             return 0 <= num < length
         x, y = pos
-        width, height = self.__gd.width, self.__gd.height
+        width, height = size.width, size.height
         return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
 
     def __get_wall_coordinates(self, wall: Wall) -> list[Point]:
@@ -75,7 +77,7 @@ class SnakeGame:
         not self.__debug and self.__snake.move()
 
         # move the walls
-        if not self.__gd._round_num % 2:
+        if not self.__round_num % 2:
             for wall in self.__walls:
                 wall.move()
 
@@ -133,9 +135,10 @@ class SnakeGame:
 
     def end_round(self):
         self.__gd.end_round()  # responsible for updating the game screen
+        self.__round_num += 1
 
     def is_over(self) -> bool:
-        rounds_over = self.__gd._round_num == self.__rounds + 1
+        rounds_over = self.__round_num == self.__rounds + 1
         return rounds_over or self.__snake.collided
 
     def game_over(self):
