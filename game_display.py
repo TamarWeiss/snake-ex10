@@ -20,10 +20,10 @@ NUM_OF_WALLS = 2
 Pixel = tuple[int, int, str]
 
 class GameDisplay:
-    def __init__(self, width: int, height: int, delay: int, verbose: int, args: Namespace):
+    def __init__(self, width: int, height: int, delay: int, verbose: bool, args: Namespace):
         """Creates a new game display object and initializes it"""
         import snake_main  # placed this import in here to solve circular import issues.
-        self.width, self.height, self.delay, self.verbose = width, height, delay / 1000, verbose > 0
+        self.width, self.height, self.delay, self.verbose = width, height, delay / 1000, verbose
         self._round_num = 0
         self._root = tki.Tk()
         self._root.title('Snake')
@@ -186,7 +186,7 @@ def parse_args(argv: list[str]) -> Namespace:
     parser.add_argument('-r', '--rounds', type=int, default=-1, help='args.rounds: Number of rounds')
     parser.add_argument('-t', '--delay', type=int, default=ROUND_TIME,
         help='Delay between rounds in milliseconds (not passed to game loop)')
-    parser.add_argument('-v', '--verbose', action='count', default=0,
+    parser.add_argument('-v', '--verbose', action='store_true',
         help='Print helpful debugging information (not passed to game loop, can be used multiple times)')
     return parser.parse_args(argv)
 
