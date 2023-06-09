@@ -23,7 +23,7 @@ class GameDisplay:
     def __init__(self, width: int, height: int, delay: int, verbose: int, args: Namespace):
         """Creates a new game display object and initializes it"""
         import snake_main  # placed this import in here to solve circular import issues.
-        self.width, self.height, self.delay, self.verbose = width, height, delay / 1000, verbose > 1
+        self.width, self.height, self.delay, self.verbose = width, height, delay / 1000, verbose > 0
         self._round_num = 0
         self._root = tki.Tk()
         self._root.title('Snake')
