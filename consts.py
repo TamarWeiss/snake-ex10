@@ -1,11 +1,3 @@
-APPLE_SIZE = 1
-SNAKE_SIZE = 3
-GROW_BONUS = 3
-
-SNAKE_COLOR = 'black'
-APPLE_COLOR = 'green'
-WALL_COLOR = 'blue'
-
 LEFT = 'Left'
 RIGHT = 'Right'
 DOWN = 'Down'
@@ -18,3 +10,5 @@ inverse_directions = {
     DOWN: UP,
     UP: DOWN
 }
+
+Point = tuple[int, int]

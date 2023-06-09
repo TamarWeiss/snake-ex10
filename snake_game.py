@@ -1,96 +1,110 @@
 import argparse
 
-import game_utils
-from consts import *
+from consts import Point
 from game_display import GameDisplay
+from game_utils import get_random_apple_data, get_random_wall_data
+from snake import Snake
+from wall import Wall
 
-Point = tuple[int, int]
+SNAKE_COLOR = 'black'
+APPLE_COLOR = 'green'
+WALL_COLOR = 'blue'
 
-
-def check_inbounds(num: int, length: int) -> bool:
-    return 0 <= num < length
-
-
-def get_next_pos(head: Point, direction: str) -> Point:
-    x, y = head
-    x += -int(direction == LEFT) + int(direction == RIGHT)
-    y += -int(direction == DOWN) + int(direction == UP)
-    return x, y
-
-
+# noinspection PyProtectedMember
 class SnakeGame:
     # ------------------------------------------------------------------
-    # init methods
+    # init method
     # ------------------------------------------------------------------
 
-    def __init__(self, gd: GameDisplay, args: argparse.Namespace) -> None:
+    def __init__(self, gd: GameDisplay, args: argparse.Namespace):
         self.__gd = gd
         self.__rounds: int = args.rounds
         self.__out_of_bounds = False
-        self.__facing = UP
         self.__score = 0
-        self.__grow_counter = 0
         self.__debug: bool = args.debug
         self.__max_apples: int = args.apples
         self.__max_walls: int = args.walls
         self.__gd.show_score(self.__score)
 
         # game's objects
-
-        self.__snake = self.__init_snake()
+        # the snake starts in the middle of the screen
+        self.__snake = Snake(self.__gd.width // 2, self.__gd.height // 2, debug=args.debug)
         self.__apples: list[Point] = []
-        self.__walls: list[list[Point]] = []
-
-        self.add_apples()
-
-    def __init_snake(self) -> list[Point]:
-        if not self.__debug:
-            x, y = self.__gd.width // 2, self.__gd.height // 2  # the snake starts in the middle of the screen
-            return [
-                (x, y - i)
-                for i in range(SNAKE_SIZE)
-                if y - i >= 0
-            ]
-        return []
+        self.__walls: list[Wall] = []
 
     # ------------------------------------------------------------------
     # private methods
     # ------------------------------------------------------------------
 
-    # TODO check collision with walls
-    # TODO does this include the i + 1 round if game is over?
-    def add_apples(self):
+    def __check_inbounds(self, pos: Point) -> bool:
+        def check_inbounds_helper(num: int, length: int) -> bool:
+            return 0 <= num < length
+        x, y = pos
+        width, height = self.__gd.width, self.__gd.height
+        return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
+
+    def __get_wall_coordinates(self, wall: Wall) -> list[Point]:
+        return [pos for pos in wall if self.__check_inbounds(pos)]
+
+    def __flatten_walls(self) -> list[Point]:
+        return [
+            cell for wall in self.__walls
+            for cell in self.__get_wall_coordinates(wall)
+        ]
+
+    def __get_occupied_cells(self) -> list[Point]:
+        return self.__snake + self.__apples + self.__flatten_walls()
+
+    def __add_walls(self):
+        if len(self.__walls) < self.__max_walls:
+            data = get_random_wall_data()
+            wall = Wall(*data)
+            occupied_cells = self.__get_occupied_cells()
+            # if nothing intersects, add the wall
+            if not set(wall) & set(occupied_cells):
+                self.__walls.append(wall)
+
+    def __add_apples(self):
         if len(self.__apples) < self.__max_apples:
-            pos = game_utils.get_random_apple_data()
-            occupied_cells = self.__snake + self.__apples
-            if pos not in occupied_cells:
+            pos = get_random_apple_data()
+            if pos not in self.__get_occupied_cells():
                 self.__apples.append(pos)
 
-    # TODO: add collision detection for walls
-    def __move_snake(self, pos: Point) -> None:
-        width, height = self.__gd.width, self.__gd.height
-        is_OOB = not check_inbounds(pos[0], width) or not check_inbounds(pos[1], height)
-        # check if the snake has crossed itself or the boundaries
-        if is_OOB or pos in self.__snake:
-            self.__out_of_bounds = True
-        else:
-            self.__snake.insert(0, pos)  # add the new position as the snake's head
+    def __moves_objects(self):
+        # move the snake
+        not self.__debug and self.__snake.move()
 
-        # the snake will grow as long as grow_counter is bigger than 0
-        if self.__grow_counter <= 0 or self.__out_of_bounds:
-            self.__snake.pop()
+        # move the walls
+        if not self.__gd._round_num % 2:
+            for wall in self.__walls:
+                wall.move()
 
-    # TODO: implement removing the apple from the list. currently unused.
-    def __eat_apple(self) -> None:
-        self.__update_score(int(len(self.__snake) ** 0.5))
-        self.__grow_counter += GROW_BONUS + int(not self.__grow_counter)
-        self.__apples.remove(self.__snake[0])
+        # filter out walls which are fully outside the board
+        self.__walls = list(filter(self.__get_wall_coordinates, self.__walls))
 
-    def __update_score(self, score: int) -> None:
-        self.__score += score
-        self.__gd.show_score(self.__score)
+    def __eat_apples(self):
+        # if the snake had eaten an apple
+        if not self.__debug and self.__snake.eat(self.__apples):
+            self.__score += self.__snake.grow()
+            self.__gd.show_score(self.__score)
 
-    def __draw_items(self, cells: list[Point], color: str) -> None:
+        # if a wall had run over an apple
+        for wall in self.__walls:
+            wall.eat(self.__apples)
+
+    def __check_collision(self):
+        head = self.__snake[0]
+        # if the snake had collided with anything
+        if not self.__check_inbounds(head) or head in self.__snake[1:] or head in self.__flatten_walls():
+            self.__snake.coordinates.pop(0)
+            self.__snake.collided = True
+
+    def __cut_snake(self):
+        for wall in self.__walls:
+            if wall[0] in self.__snake:
+                self.__snake.cut(wall[0])
+
+    def __draw_objects(self, cells: list[Point], color: str):
         for x, y in cells:
             self.__gd.draw_cell(x, y, color)
 
@@ -98,37 +112,31 @@ class SnakeGame:
     # public methods
     # ------------------------------------------------------------------
 
-    def read_key(self) -> None:
+    def read_key(self):
         key_clicked = self.__gd.get_key_clicked()
-        # if we input a direction which is not the inverse to our current one
-        if key_clicked and key_clicked != inverse_directions[self.__facing]:
-            self.__facing = key_clicked
+        self.__snake.turn(key_clicked)
 
-    # TODO: support other objects
-    def update_objects(self) -> None:
-        if not self.__debug:  # activate the snake-related functions (as long as it's not debug mode)
-            pos = get_next_pos(self.__snake[0], self.__facing)
-            self.__move_snake(pos)
-            if self.__snake[0] in self.__apples:
-                self.__eat_apple()
-        self.add_apples()
+    def update_objects(self):
+        not self.__debug and self.__cut_snake()
+        self.__moves_objects()
+        self.__eat_apples()
+        not self.__debug and self.__check_collision()
 
-    def draw_board(self) -> None:
-        self.__draw_items(self.__apples, APPLE_COLOR)  # drawing the apples
-        not self.__debug and self.__draw_items(self.__snake, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
-        for wall in self.__walls:  # lastly, drawing the walls
-            self.__draw_items(wall, WALL_COLOR)
+    def add_objects(self):
+        self.__add_walls()
+        self.__add_apples()
 
-    # TODO: grow counter should tick down at the start or at the end of each round?
-    def end_round(self) -> None:
+    def draw_board(self):
+        self.__draw_objects(self.__apples, APPLE_COLOR)  # drawing the apples
+        self.__draw_objects(self.__snake.coordinates, SNAKE_COLOR)  # drawing the snake (unless its debug mode)
+        self.__draw_objects(self.__flatten_walls(), WALL_COLOR)  # drawing the walls
+
+    def end_round(self):
         self.__gd.end_round()  # responsible for updating the game screen
-        if self.__grow_counter > 0:  # ticking down the counter at the end of each round
-            self.__grow_counter -= 1
 
     def is_over(self) -> bool:
-        # noinspection PyProtectedMember
-        rounds_over = self.__gd._round_num == self.__rounds
-        return rounds_over or self.__out_of_bounds
+        rounds_over = self.__gd._round_num == self.__rounds + 1
+        return rounds_over or self.__snake.collided
 
-    def game_over(self) -> None:
+    def game_over(self):
         self.__gd.show_score(f'{self.__score}. Game Over!')

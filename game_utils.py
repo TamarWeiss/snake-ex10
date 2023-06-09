@@ -1,18 +1,15 @@
 import random
 from collections import namedtuple
-from typing import Any, Tuple
 
-WIDTH = 40
-HEIGHT = 30
+from consts import Point, inverse_directions
+from game_display import HEIGHT, WIDTH
 
 random_array = [random.Random(), random.Random()]
-
 Size = namedtuple('Size', ['width', 'height'])
 size = Size(WIDTH, HEIGHT)
-
 verbose = False
 
-def get_random_apple_data() -> Tuple[int, int]:
+def get_random_apple_data() -> Point:
     """
     This method returns randomly drawn data for the apple
     :return: (x,y) - Random location on the board
@@ -25,14 +22,14 @@ def get_random_apple_data() -> Tuple[int, int]:
 
     return x, y
 
-def get_random_wall_data() -> Tuple[int, int, str]:
+def get_random_wall_data() -> tuple[int, int, str]:
     """
     This method returns randomly drawn data for the wall
     :return: (x,y,direction) Random location, and direction
     """
     x = random_array[1].randint(0, size.width - 1)
     y = random_array[1].randint(0, size.height - 1)
-    direction = random_array[1].choice(["Up", "Down", "Left", "Right"])
+    direction = random_array[1].choice(list(inverse_directions))
 
     if verbose:
         print(f'Wall(x={x},y={y},direction={direction})')
@@ -47,7 +44,7 @@ def set_verbose(flag: bool) -> None:
     global verbose
     verbose = flag
 
-def set_random_seed(val: Any) -> None:
+def set_random_seed(val: any) -> None:
     """
     Internal: not for external usage
     :param val:
