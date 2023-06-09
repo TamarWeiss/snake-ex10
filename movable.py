@@ -1,6 +1,6 @@
 from typing import Generator, Optional, Sequence, overload
 
-from consts import DOWN, LEFT, Point, RIGHT, UP, inverse_directions
+from consts import *
 
 class Movable(Sequence):
     def __init__(self, direction: str):

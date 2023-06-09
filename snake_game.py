@@ -1,10 +1,14 @@
 import argparse
 
-from consts import *
+from consts import Point
 from game_display import GameDisplay
 from game_utils import get_random_apple_data, get_random_wall_data
 from snake import Snake
 from wall import Wall
+
+SNAKE_COLOR = 'black'
+APPLE_COLOR = 'green'
+WALL_COLOR = 'blue'
 
 # noinspection PyProtectedMember
 class SnakeGame:

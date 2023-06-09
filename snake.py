@@ -1,5 +1,8 @@
-from consts import GROW_BONUS, Point, SNAKE_SIZE, UP
+from consts import Point, UP
 from movable import Movable
+
+SNAKE_SIZE = 3
+GROW_BONUS = 3
 
 class Snake(Movable):
     def __init__(self, x: int, y: int, debug=False):
