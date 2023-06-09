@@ -52,11 +52,14 @@ class SnakeGame:
             for cell in self.__get_wall_coordinates(wall)
         ]
 
+    def __get_occupied_cells(self) -> list[Point]:
+        return self.__snake + self.__apples + self.__flatten_walls()
+
     def __add_walls(self):
         if len(self.__walls) < self.__max_walls:
             data = get_random_wall_data()
             wall = Wall(*data)
-            occupied_cells = self.__snake + self.__apples
+            occupied_cells = self.__get_occupied_cells()
             # if nothing intersects, add the wall
             if not set(wall) & set(occupied_cells):
                 self.__walls.append(wall)
@@ -64,8 +67,7 @@ class SnakeGame:
     def __add_apples(self):
         if len(self.__apples) < self.__max_apples:
             pos = get_random_apple_data()
-            occupied_cells = self.__snake + self.__apples + self.__flatten_walls()
-            if pos not in occupied_cells:
+            if pos not in self.__get_occupied_cells():
                 self.__apples.append(pos)
 
     def __moves_objects(self):
