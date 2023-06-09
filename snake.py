@@ -5,8 +5,8 @@ SNAKE_SIZE = 3
 GROW_BONUS = 3
 
 class Snake(Movable):
-    def __init__(self, x: int, y: int, debug=False):
-        super().__init__(UP)
+    def __init__(self, x: int, y: int, direction=UP, debug=False):
+        super().__init__(direction)
         self.__grow_counter = 0
         self.collided = False
         if not debug:

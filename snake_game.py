@@ -28,7 +28,7 @@ class SnakeGame:
 
         # game's objects
         # the snake starts in the middle of the screen
-        self.__snake = Snake(self.__gd.width // 2, self.__gd.height // 2, args.debug)
+        self.__snake = Snake(self.__gd.width // 2, self.__gd.height // 2, debug=args.debug)
         self.__apples: list[Point] = []
         self.__walls: list[Wall] = []
 
@@ -58,7 +58,7 @@ class SnakeGame:
             wall = Wall(*data)
             occupied_cells = self.__snake + self.__apples
             # if nothing intersects, add the wall
-            if not set(occupied_cells) & set(wall):
+            if not set(wall) & set(occupied_cells):
                 self.__walls.append(wall)
 
     def __add_apples(self):
