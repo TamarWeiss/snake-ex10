@@ -7,8 +7,7 @@ def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
     game = SnakeGame(gd, args)  # INIT OBJECTS
     game.add_objects()  # ADD NEW OBJECTS
     game.draw_board()  # DRAW BOARD
-    game.end_round()
-    # END OF ROUND 0
+    game.end_round()  # END OF ROUND 0
     while not game.is_over():
         game.read_key()  # CHECK KEY CLICKS
         game.update_objects()  # UPDATE CURRENT OBJECTS

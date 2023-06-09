@@ -78,8 +78,9 @@ class SnakeGame:
         if not self.__gd._round_num % 2:
             for wall in self.__walls:
                 wall.move()
-                if not self.__get_wall_coordinates(wall):
-                    self.__walls.remove(wall)
+
+        # filter out walls which are fully outside the board
+        self.__walls = list(filter(self.__get_wall_coordinates, self.__walls))
 
     def __eat_apples(self):
         # if the snake had eaten an apple
