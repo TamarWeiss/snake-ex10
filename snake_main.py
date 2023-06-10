@@ -1,9 +1,9 @@
-import argparse
+from argparse import Namespace
 
 from game_display import GameDisplay
 from snake_game import SnakeGame
 
-def main_loop(gd: GameDisplay, args: argparse.Namespace) -> None:
+def main_loop(gd: GameDisplay, args: Namespace) -> None:
     game = SnakeGame(gd, args)  # INIT OBJECTS
     game.add_objects()  # ADD NEW OBJECTS
     game.draw_board()  # DRAW BOARD

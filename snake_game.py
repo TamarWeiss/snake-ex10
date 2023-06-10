@@ -1,4 +1,4 @@
-import argparse
+from argparse import Namespace
 
 from consts import Point
 from game_display import GameDisplay
@@ -16,7 +16,7 @@ class SnakeGame:
     # init method
     # ------------------------------------------------------------------
 
-    def __init__(self, gd: GameDisplay, args: argparse.Namespace):
+    def __init__(self, gd: GameDisplay, args: Namespace):
         self.__gd = gd
         self.__score = 0
         self.__round_num = 0
