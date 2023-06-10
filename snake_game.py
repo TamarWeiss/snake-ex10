@@ -18,10 +18,9 @@ class SnakeGame:
 
     def __init__(self, gd: GameDisplay, args: argparse.Namespace):
         self.__gd = gd
-        self.__rounds: int = args.rounds
-        self.__out_of_bounds = False
         self.__score = 0
         self.__round_num = 0
+        self.__rounds: int = args.rounds
         self.__debug: bool = args.debug
         self.__max_apples: int = args.apples
         self.__max_walls: int = args.walls
@@ -42,8 +41,7 @@ class SnakeGame:
         def check_inbounds_helper(num: int, length: int) -> bool:
             return 0 <= num < length
         x, y = pos
-        width, height = size.width, size.height
-        return check_inbounds_helper(x, width) and check_inbounds_helper(y, height)
+        return check_inbounds_helper(x, size.width) and check_inbounds_helper(y, size.height)
 
     def __get_wall_coordinates(self, wall: Wall) -> list[Point]:
         return [pos for pos in wall if self.__check_inbounds(pos)]

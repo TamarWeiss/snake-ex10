@@ -4,20 +4,20 @@ from consts import *
 
 class Movable(Sequence):
     def __init__(self, direction: str):
-        self.__direction = direction
+        self.direction = direction
         self.coordinates: list[Point] = []
 
     def get_next_pos(self, pos: Point = None, inverse=False) -> Point:
         x, y = pos or self[0]
-        direction = self.__direction if not inverse else inverse_directions.get(self.__direction)
+        direction = self.direction if not inverse else inverse_directions.get(self.direction)
         x += -int(direction == LEFT) + int(direction == RIGHT)
         y += -int(direction == DOWN) + int(direction == UP)
         return x, y
 
     def turn(self, direction: Optional[str]):
         # if the direction is not the inverse to our current one
-        if direction and direction != inverse_directions.get(self.__direction):
-            self.__direction = direction
+        if direction and direction != inverse_directions.get(self.direction):
+            self.direction = direction
 
     def move(self, grow=False):
         pos = self.get_next_pos()

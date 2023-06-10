@@ -24,7 +24,7 @@ class GameDisplay:
         """Creates a new game display object and initializes it"""
         import snake_main  # placed this import in here to solve circular import issues.
         self.width, self.height, self.delay, self.verbose = width, height, delay / 1000, verbose
-        self._round_num = 0
+        self.round_num = 0
         self._root = tki.Tk()
         self._root.title('Snake')
         self._root.bind('<KeyPress>', self._key_press)
@@ -38,7 +38,6 @@ class GameDisplay:
 
         self._root.resizable(False, False)
         self.key_click: Optional[str] = None
-        self._key_click_round: int = 0
 
         self._game_control_thread = threading.Thread(target=snake_main.main_loop, args=(self, args))
         self._game_control_thread.daemon = True
@@ -85,7 +84,6 @@ class GameDisplay:
         """
         if e.keysym in inverse_directions:
             self.key_click = e.keysym
-            self._key_click_round = self._round_num
 
     def get_key_clicked(self) -> Optional[str]:
         """
@@ -107,7 +105,7 @@ class GameDisplay:
         """
         self._to_draw[x, y] = color
 
-    def _check_inbounds(self, x: int, y: int) -> bool:
+    def check_inbounds(self, x: int, y: int) -> bool:
         def check_inbounds_helper(num: int, length: int) -> bool:
             return 0 <= num < length
         return check_inbounds_helper(x, self.width) and check_inbounds_helper(y, self.height)
@@ -120,7 +118,7 @@ class GameDisplay:
         :param color: the color we wish to draw
         :return: None
         """
-        if not self._check_inbounds(x, y):
+        if not self.check_inbounds(x, y):
             raise ValueError(f"cell index out of bounds of the board: {(x, y)}")
         # setting the coordinates of the board correctly,
         # the y-axis needs to point up.
@@ -163,7 +161,7 @@ class GameDisplay:
         while now < self._round_start_time:
             time.sleep(self._round_start_time - now)
             now = time.time()
-        self._round_num += 1
+        self.round_num += 1
 
     def show_score(self, val):
         """
