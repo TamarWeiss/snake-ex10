@@ -94,9 +94,11 @@ class SnakeGame:
 
     def __check_collision(self):
         head = self.__snake[0]
+        out_of_bounds = not self.__check_inbounds(head)
+        collided_with_wall = set(self.__snake[:2]) & set(self.__flatten_walls())
         # if the snake had collided with anything
-        if not self.__check_inbounds(head) or head in self.__snake[1:] or head in self.__flatten_walls():
-            self.__snake.coordinates.pop(0)
+        if out_of_bounds or head in self.__snake[1:] or collided_with_wall:
+            out_of_bounds and self.__snake.coordinates.pop(0)
             self.__snake.collided = True
 
     def __cut_snake(self):

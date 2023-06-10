@@ -2,8 +2,9 @@ import random
 from collections import namedtuple
 
 from consts import Point, inverse_directions
-from game_display import HEIGHT, WIDTH
 
+WIDTH = 40
+HEIGHT = 30
 random_array = [random.Random(), random.Random()]
 Size = namedtuple('Size', ['width', 'height'])
 size = Size(WIDTH, HEIGHT)

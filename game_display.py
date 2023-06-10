@@ -6,14 +6,12 @@ import tkinter as tki
 from argparse import Namespace
 from typing import Callable, Optional
 
-import game_utils
 from consts import Point, inverse_directions
+from game_utils import set_random_seed, set_size, set_verbose, size
 
 CELL_SIZE = 15
 ROUND_TIME = 150
 
-WIDTH = 40
-HEIGHT = 30
 NUM_OF_APPLES = 3
 NUM_OF_WALLS = 2
 
@@ -175,8 +173,8 @@ class GameDisplay:
 
 def parse_args(argv: list[str]) -> Namespace:
     parser = argparse.ArgumentParser(prog='game_display.py', description='Runs snake game')
-    parser.add_argument('-x', '--width', type=int, default=WIDTH, help='args.width: Game board width')
-    parser.add_argument('-y', '--height', type=int, default=HEIGHT, help='args.height: Game board height')
+    parser.add_argument('-x', '--width', type=int, default=size.width, help='args.width: Game board width')
+    parser.add_argument('-y', '--height', type=int, default=size.height, help='args.height: Game board height')
     parser.add_argument('-s', '--seed', default=None, help='Seed for random number generator (not passed to game loop)')
     parser.add_argument('-a', '--apples', type=int, default=NUM_OF_APPLES, help='args.apples: Number of apples')
     parser.add_argument('-d', '--debug', action='store_true', help='args.debug: Debug mode with no snake')
@@ -189,9 +187,9 @@ def parse_args(argv: list[str]) -> Namespace:
     return parser.parse_args(argv)
 
 def setup_game(args: Namespace) -> GameDisplay:
-    game_utils.set_random_seed(args.__dict__.pop('seed'))
-    game_utils.set_verbose(args.verbose)
-    game_utils.set_size(args.width, args.height)
+    set_random_seed(args.__dict__.pop('seed'))
+    set_verbose(args.verbose)
+    set_size(args.width, args.height)
     return GameDisplay(args.width, args.height, args.__dict__.pop('delay'), args.__dict__.pop('verbose'), args)
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ def main_loop(gd: GameDisplay, args: Namespace) -> None:
         game.update_objects()  # UPDATE CURRENT OBJECTS
         game.add_objects()  # ADD NEW OBJECTS
         game.draw_board()  # DRAW BOARD
-        game.end_round()  # WAIT FOR THE NEXT ROUND:
+        game.end_round()  # WAIT FOR THE NEXT ROUND
     game.game_over()
 
 if __name__ == "__main__":
